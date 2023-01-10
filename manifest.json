@@ -1,0 +1,42 @@
+{
+  "name": "Password Lock for WhatsApp Web",
+  "description": "Automatically lock WhatsApp Web after a period of time or by pressing the action button",
+  "version": "0.1.0",
+  "manifest_version": 3,
+  "permissions": [
+    "storage",
+    "alarms"
+  ],
+  "host_permissions": [
+    "https://web.whatsapp.com/*"
+  ],
+  "background": {
+    "service_worker": "worker.js"
+  },
+  "action": {
+    "default_title": "Open WhatsApp Web or focus an already open one then lock it"
+  },
+  "icons": {
+    "16": "data/icons/16.png",
+    "32": "data/icons/32.png",
+    "48": "data/icons/48.png",
+    "64": "data/icons/64.png",
+    "128": "data/icons/128.png",
+    "256": "data/icons/256.png",
+    "512": "data/icons/512.png"
+  },
+  "content_scripts": [{
+    "matches": ["https://web.whatsapp.com/*"],
+    "js": [
+      "/data/blocker.js"
+    ],
+    "run_at": "document_start"
+  }],
+  "web_accessible_resources": [{
+    "resources": ["/data/lock/index.html"],
+    "matches": ["https://web.whatsapp.com/*"]
+  }],
+  "commands": {
+    "_execute_action": {}
+  }
+}

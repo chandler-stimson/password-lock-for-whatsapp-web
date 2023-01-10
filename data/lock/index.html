@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" type="text/css" href="index.css">
+</head>
+<body>
+  <form>
+    <img src="imgs/lock.png" width="128">
+    <input type="password" id="password" placeholder="Enter Password, then Enter to Unlock" minlength=5>
+    <div style="display: flex; gap: 2px;">
+      <input type="submit" id="enter" value="Unlock">
+      <input type="button" id="reset" value="Reset Password">
+    </div>
+    <input type="password" id="password-check" placeholder="Enter New Password Again">
+    <input type="submit" id="change" value="Change Password">
+  </form>
+  <div id="options" class="hidden">
+    <input type="radio" name="mode" id="each-time">
+    <label for="each-time">Ask for password each time</label>
+    <input type="radio" name="mode" id="time-based">
+    <label for="time-based">
+      <span>Do not ask for password for the next</span>
+      <input type="number" id="minutes" min=1>
+      minutes
+    </label>
+    <input type="checkbox" id="auto-lock">
+    <label for="auto-lock">Lock WhatsApp after this period (when time-based mode is enabled)</label>
+  </div>
+  <script type="text/javascript" src="index.js"></script>
+</body>
+</html>
