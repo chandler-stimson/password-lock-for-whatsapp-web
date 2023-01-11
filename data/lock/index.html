@@ -11,23 +11,36 @@
     <input type="password" id="password" placeholder="Enter Password, then Enter to Unlock" minlength=5>
     <div style="display: flex; gap: 2px;">
       <input type="submit" id="enter" value="Unlock">
-      <input type="button" id="reset" value="Reset Password">
+      <input type="button" id="reset" value="Reset">
+      <input type="button" id="settings" value="Options">
     </div>
     <input type="password" id="password-check" placeholder="Enter New Password Again">
     <input type="submit" id="change" value="Change Password">
   </form>
   <div id="options" class="hidden">
-    <input type="radio" name="mode" id="each-time">
-    <label for="each-time">Ask for password each time</label>
-    <input type="radio" name="mode" id="time-based">
-    <label for="time-based">
-      <span>Do not ask for password for the next</span>
-      <input type="number" id="minutes" min=1>
-      minutes
-    </label>
-    <input type="checkbox" id="auto-lock">
-    <label for="auto-lock">Lock WhatsApp after this period (when time-based mode is enabled)</label>
+    <div class="two">
+      <input type="radio" name="mode" id="each-time">
+      <label for="each-time">Ask for password each time</label>
+      <input type="radio" name="mode" id="time-based">
+      <label for="time-based">
+        <span>Do not ask for password for the next</span>
+        <input type="number" id="minutes" min=1>
+        <span>minutes</span>
+      </label>
+    </div>
+    <div class="two">
+      <input type="checkbox" id="auto-lock">
+      <label for="auto-lock">Lock WhatsApp Web after the lock period above is over</label>
+      <input type="checkbox" id="idle">
+      <label for="idle">
+        <span>Lock WhatsApp after</span>
+        <input type="number" id="idle-timeout" min=1>
+        <span>minutes of inactivity (idle state)</span>
+      </label>
+    </div>
   </div>
+  <notification-view id="notify"></notification-view>
   <script type="text/javascript" src="index.js"></script>
+  <script type="text/javascript" src="notification-view/notification-view.js"></script>
 </body>
 </html>

@@ -1,11 +1,12 @@
 {
   "name": "Password Lock for WhatsApp Web",
   "description": "Automatically lock WhatsApp Web after a period of time or by pressing the action button",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "manifest_version": 3,
   "permissions": [
     "storage",
-    "alarms"
+    "alarms",
+    "idle"
   ],
   "host_permissions": [
     "https://web.whatsapp.com/*"
@@ -25,6 +26,7 @@
     "256": "data/icons/256.png",
     "512": "data/icons/512.png"
   },
+  "homepage_url": "https://webextension.org/listing/password-lock-for-whatsapp.html",
   "content_scripts": [{
     "matches": ["https://web.whatsapp.com/*"],
     "js": [

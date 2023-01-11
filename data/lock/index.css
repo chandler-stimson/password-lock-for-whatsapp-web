@@ -8,28 +8,29 @@ body {
   grid-template-rows: min-content min-content;
   margin-inline: auto;
   accent-color: #035494;
-  place-content: center;
+  align-content: center;
   width: min(100vw - 2rem, 30rem);
 }
-select,
 button,
 input[type=submit],
 input[type=button] {
-  height: 28px;
   color: #444;
   background-image: linear-gradient(rgb(237, 237, 237), rgb(237, 237, 237) 38%, rgb(222, 222, 222));
   box-shadow: rgba(0, 0, 0, 0.08) 0 1px 0, rgba(255, 255, 255, 0.75) 0 1px 2px inset;
   text-shadow: rgb(240, 240, 240) 0 1px 0;
   cursor: pointer;
 }
-textarea,
 button,
 input[type=number],
 input[type=text],
 input[type=password],
 input[type=submit],
 input[type=button] {
+  height: 32px;
   border: solid 1px rgba(0, 0, 0, 0.25);
+}
+input[type=number] {
+  height: 24px;
 }
 input[type=button]:disabled {
   opacity: 0.5;
@@ -56,20 +57,24 @@ form img {
 form input[type=password] {
   padding: 10px 5px;
   box-sizing: border-box;
-  height: 28px;
 }
 form img {
   margin-bottom: 50px;
 }
 
-#options {
+.two {
   display: grid;
   grid-template-columns: min-content 1fr;
   grid-gap: 5px;
+  align-items: center;
+}
+#options {
+  padding: 10px;
   background-color: #fff;
   margin-top: 30px;
-  padding: 10px;
-  align-items: start;
+}
+#options > div:last-child {
+  margin-top: 20px;
 }
 #options input[type=number] {
   width: 5ch;
@@ -81,5 +86,5 @@ body.hash #change {
 }
 
 .hidden {
-  visibility: hidden;
+  display: none !important;
 }
