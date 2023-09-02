@@ -1,12 +1,19 @@
 const run = forced => chrome.storage.local.get({
   mode: 'each-time',
-  current: 0,
   minutes: 30
-}, prefs => {
+}, async prefs => {
   if (prefs.mode === 'time-based' && forced !== true) {
-    const now = Date.now();
-    if (now - prefs.current < prefs.minutes * 60 * 1000) {
-      return;
+    const o = await new Promise(resolve => chrome.runtime.sendMessage({
+      cmd: 'get-alarm'
+    }, resolve));
+
+    if (o) {
+      if (o.scheduledTime - Date.now() > 0) {
+        return;
+      }
+      else {
+        chrome.alarms.clear('lock-me');
+      }
     }
   }
   if (!document.querySelector('dialog.pbfww')) {
@@ -33,14 +40,14 @@ const run = forced => chrome.storage.local.get({
     document.documentElement.append(dialog);
     dialog.showModal();
 
-    document.body.style.filter = 'blur(15px)';
+    document.documentElement.classList.add('bgblurrify');
   }
 });
 run();
 
 chrome.runtime.onMessage.addListener((request, sender, response) => {
   if (request.cmd === 'close-me') {
-    document.body.style.filter = '';
+    document.documentElement.classList.remove('bgblurrify');
     // remove old blockers
     for (const e of document.querySelectorAll('dialog.pbfww')) {
       e.remove();

@@ -1,4 +1,18 @@
-const onMessage = request => {
+const autoLock = () => chrome.storage.local.get({
+  'minutes': 30,
+  'mode': 'each-time'
+}, prefs => {
+  if (prefs['mode'] === 'time-based') {
+    chrome.alarms.create('lock-me', {
+      when: Date.now() + prefs.minutes * 60 * 1000
+    });
+  }
+  else {
+    chrome.alarms.clear('lock-me');
+  }
+});
+
+const onMessage = (request, sender, response) => {
   if (request.cmd === 'close-me') {
     chrome.tabs.query({url: 'https://web.whatsapp.com/*'}).then(tabs => {
       for (const tab of tabs) {
@@ -7,19 +21,7 @@ const onMessage = request => {
         });
       }
     });
-    chrome.storage.local.get({
-      'auto-lock': false,
-      'minutes': 30
-    }, prefs => {
-      if (prefs['auto-lock']) {
-        chrome.alarms.create('lock-me', {
-          when: Date.now() + prefs.minutes * 60 * 1000
-        });
-      }
-      else {
-        chrome.alarms.clear('lock-me');
-      }
-    });
+    autoLock();
   }
   else if (request.cmd === 'lock-me') {
     chrome.tabs.query({url: 'https://web.whatsapp.com/*'}).then(tabs => {
@@ -35,6 +37,10 @@ const onMessage = request => {
         });
       }
     });
+  }
+  else if (request.cmd === 'get-alarm') {
+    chrome.alarms.get('lock-me', response);
+    return true;
   }
 };
 chrome.runtime.onMessage.addListener(onMessage);
@@ -57,6 +63,9 @@ chrome.action.onClicked.addListener(async tab => {
         active: true
       });
     }
+
+    // remove unlock
+    chrome.alarms.clear('lock-me');
   }
   else {
     chrome.tabs.create({
@@ -90,11 +99,6 @@ chrome.alarms.onAlarm.addListener(({name}) => {
   chrome.runtime.onStartup.addListener(start);
   chrome.runtime.onInstalled.addListener(start);
 }
-chrome.storage.onChanged.addListener(ps => {
-  if (ps['idle-timeout']) {
-    chrome.idle.setDetectionInterval(ps['idle-timeout'].newValue * 60);
-  }
-});
 chrome.idle.onStateChanged.addListener(state => {
   if (state === 'idle' || state === 'locked') {
     chrome.storage.local.get({
@@ -109,6 +113,14 @@ chrome.idle.onStateChanged.addListener(state => {
   }
 });
 
+chrome.storage.onChanged.addListener(ps => {
+  if (ps['idle-timeout']) {
+    chrome.idle.setDetectionInterval(ps['idle-timeout'].newValue * 60);
+  }
+  if (ps['minutes'] || ps['mode']) {
+    autoLock();
+  }
+});
 
 /* FAQs & Feedback */
 {

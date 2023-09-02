@@ -41,6 +41,9 @@ input[type=number]:focus {
   outline: none;
   background-color: #e5f8ff;
 }
+input[type="checkbox"] {
+  cursor: pointer;
+}
 a,
 a:visited {
   color: #07c;
@@ -87,4 +90,10 @@ body.hash #change {
 
 .hidden {
   display: none !important;
+}
+
+body[data-mode="each-time"] #auto-lock,
+body[data-mode="each-time"] label[for="auto-lock"] {
+  opacity: 0.5;
+  pointer-events: none;
 }

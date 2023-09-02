@@ -28,13 +28,16 @@ chrome.storage.local.get({
   'hash': '',
   'auto-lock': false,
   'idle-timeout': 10,
-  'idle': true
+  'idle': true,
+  'context-lock': true
 }, prefs => {
+  document.body.dataset.mode = prefs.mode;
   document.getElementById(prefs.mode).checked = true;
   document.getElementById('minutes').value = prefs.minutes;
   document.getElementById('auto-lock').checked = prefs['auto-lock'];
   document.getElementById('idle').checked = prefs.idle;
   document.getElementById('idle-timeout').value = prefs['idle-timeout'];
+  document.getElementById('context-lock').checked = prefs['context-lock'];
 
   document.body.classList[prefs.hash ? 'add' : 'remove']('hash');
 });
@@ -46,42 +49,60 @@ document.getElementById('reset').onclick = () => {
 };
 
 const save = () => {
+  const mode = document.querySelector('[name=mode]:checked').id;
+  document.body.dataset.mode = mode;
+
   chrome.storage.local.set({
-    'mode': document.querySelector('[name=mode]:checked').id,
+    mode,
     'minutes': Math.max(1, document.getElementById('minutes').valueAsNumber ?? 30),
     'idle-timeout': Math.max(1, document.getElementById('idle-timeout').valueAsNumber ?? 10),
     'auto-lock': document.getElementById('auto-lock').checked,
-    'idle': document.getElementById('idle').checked
+    'idle': document.getElementById('idle').checked,
+    'context-lock': document.getElementById('context-lock').checked
   });
 };
 
-document.addEventListener('submit', e => {
+document.addEventListener('submit', async e => {
   const password = document.getElementById('password').value;
-  if (e.submitter && e.submitter.id === 'change') {
-    const p = document.getElementById('password-check').value;
+  const p = document.getElementById('password-check').value;
+  e.preventDefault();
 
-    if (password === p) {
-      check.hash(password).then(hash => chrome.storage.local.set({
-        hash
-      }, () => {
-        document.body.classList.add('hash');
-        document.getElementById('password').dispatchEvent(new Event('input'));
-      }));
-    }
-    else {
-      notify('Passwords do not match!');
-    }
-  }
-  else {
-    check().then(() => {
+  if (e.submitter && e.submitter.id === 'enter') {
+    try {
+      await check();
       save();
 
       chrome.runtime.sendMessage({
         cmd: 'close-me'
       });
-    }).catch(e => notify('Password is incorrect: ' + e.message));
+    }
+    catch (e) {
+      console.log(e);
+      // maybe the user is trying to save the password
+      if (!password || password !== p) {
+        return notify('Password is incorrect: ' + e.message);
+      }
+    }
   }
-  e.preventDefault();
+  if (password === '') {
+    notify('Password cannot be empty');
+  }
+  else if (password === p) {
+    const hash = await check.hash(password);
+
+    chrome.storage.local.set({
+      hash
+    }, () => {
+      document.body.classList.add('hash');
+      document.getElementById('password').dispatchEvent(new Event('input'));
+      if (e.submitter && e.submitter.id === 'enter') {
+        e.submitter.click();
+      }
+    });
+  }
+  else {
+    notify('Passwords do not match!');
+  }
 });
 
 document.getElementById('options').onchange = () => {
@@ -94,4 +115,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
 document.getElementById('settings').onclick = () => check().then(() => {
   document.getElementById('options').classList.toggle('hidden');
-}).catch(() => notify('Password is incorrect'));
+}).catch(e => notify(e.message === 'NO_PASSWORD_IS_SET' ? 'Set the password, then retry' : 'Password is incorrect'));
+
+// prevent context menu
+{
+  let locked = true;
+  chrome.storage.local.get({
+    'context-lock': locked
+  }, prefs => locked = prefs['context-lock']);
+  chrome.storage.onChanged.addListener(ps => {
+    if (ps['context-lock']) {
+      locked = ps['context-lock'].newValue;
+    }
+  });
+
+  document.addEventListener('contextmenu', e => {
+    if (locked) {
+      notify(e.target.id === 'password' ?
+        'Use Ctrl + V or Command + V to paste' : 'Please unlock WhatsApp for right-click to work'
+      );
+      e.preventDefault();
+    }
+  });
+}

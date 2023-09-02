@@ -1,0 +1,3 @@
+html.bgblurrify body {
+  filter: blur(15px);
+}
