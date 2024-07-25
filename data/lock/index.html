@@ -4,17 +4,18 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" type="text/css" href="index.css">
+  <title>Interface for Password Lock for WhatsApp™ Web</title>
 </head>
 <body>
   <form>
     <img src="imgs/lock.png" width="128">
-    <input type="password" id="password" placeholder="Enter Password, then Enter to Unlock" minlength=5>
+    <input type="password" id="password" placeholder="Enter Password, then press Enter to Unlock" minlength=5 tabindex="1">
     <div style="display: flex; gap: 2px;">
-      <input type="submit" id="enter" value="Unlock">
+      <input type="submit" id="enter" value="Unlock"  tabindex="3">
       <input type="button" id="reset" value="Reset">
       <input type="button" id="settings" value="Options">
     </div>
-    <input type="password" id="password-check" placeholder="Enter New Password Again">
+    <input type="password" id="password-check" placeholder="Enter New Password Again"  tabindex="2">
     <input type="submit" id="change" value="Change Password">
   </form>
   <div id="options" class="hidden">

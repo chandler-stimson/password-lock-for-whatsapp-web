@@ -1,5 +1,5 @@
-const notify = msg => {
-  document.getElementById('notify').notify(msg, 'error', 3000);
+const notify = (msg, timeout = 3000) => {
+  document.getElementById('notify').notify(msg, 'error', timeout);
   document.getElementById('password').focus();
 };
 
@@ -40,6 +40,10 @@ chrome.storage.local.get({
   document.getElementById('context-lock').checked = prefs['context-lock'];
 
   document.body.classList[prefs.hash ? 'add' : 'remove']('hash');
+
+  if (!prefs.hash) {
+    document.getElementById('password').placeholder = 'Enter New Password';
+  }
 });
 
 document.getElementById('reset').onclick = () => {
@@ -77,7 +81,7 @@ document.addEventListener('submit', async e => {
       });
     }
     catch (e) {
-      console.log(e);
+      console.info('[Error]', e);
       // maybe the user is trying to save the password
       if (!password || password !== p) {
         return notify('Password is incorrect: ' + e.message);

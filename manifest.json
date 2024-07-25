@@ -1,7 +1,7 @@
 {
   "name": "Password Lock for WhatsApp™ Web",
   "description": "Automatically lock WhatsApp Web after a period of time or by pressing the action button",
-  "version": "0.1.2",
+  "version": "0.1.4",
   "manifest_version": 3,
   "permissions": [
     "storage",
@@ -18,13 +18,13 @@
     "default_title": "Open WhatsApp Web or focus an already opened one then lock it"
   },
   "icons": {
-    "16": "data/icons/16.png",
-    "32": "data/icons/32.png",
-    "48": "data/icons/48.png",
-    "64": "data/icons/64.png",
-    "128": "data/icons/128.png",
-    "256": "data/icons/256.png",
-    "512": "data/icons/512.png"
+    "16": "/data/icons/16.png",
+    "32": "/data/icons/32.png",
+    "48": "/data/icons/48.png",
+    "64": "/data/icons/64.png",
+    "128": "/data/icons/128.png",
+    "256": "/data/icons/256.png",
+    "512": "/data/icons/512.png"
   },
   "homepage_url": "https://webextension.org/listing/password-lock-for-whatsapp.html",
   "content_scripts": [{
