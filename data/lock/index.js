@@ -7,11 +7,14 @@ const check = async () => {
   const password = document.getElementById('password').value;
   const s = await check.hash(password);
 
-  return new Promise((resolve, reject) => {
-    chrome.storage.local.get({
-      hash: ''
-    }, prefs => prefs.hash === s ? resolve() : reject(Error(prefs.hash ? 'NO_MATCH' : 'NO_PASSWORD_IS_SET')));
+  const prefs = await chrome.storage.local.get({
+    hash: ''
   });
+
+  if (prefs.hash === s) {
+    return;
+  }
+  throw Error(prefs.hash ? 'NO_MATCH' : 'NO_PASSWORD_IS_SET');
 };
 check.hash = async password => {
   const encoder = new TextEncoder();
@@ -30,7 +33,7 @@ chrome.storage.local.get({
   'idle-timeout': 10,
   'idle': true,
   'context-lock': true
-}, prefs => {
+}).then(prefs => {
   document.body.dataset.mode = prefs.mode;
   document.getElementById(prefs.mode).checked = true;
   document.getElementById('minutes').value = prefs.minutes;
@@ -46,10 +49,14 @@ chrome.storage.local.get({
   }
 });
 
-document.getElementById('reset').onclick = () => {
-  check().then(() => {
+document.getElementById('reset').onclick = async () => {
+  try {
+    await check();
     document.body.classList.remove('hash');
-  }).catch(() => notify('Enter the old password first'));
+  }
+  catch (e) {
+    notify('Enter the old password first');
+  }
 };
 
 const save = () => {
@@ -94,32 +101,43 @@ document.addEventListener('submit', async e => {
   else if (password === p) {
     const hash = await check.hash(password);
 
-    chrome.storage.local.set({
+    await chrome.storage.local.set({
       hash
-    }, () => {
-      document.body.classList.add('hash');
-      document.getElementById('password').dispatchEvent(new Event('input'));
-      if (e.submitter && e.submitter.id === 'enter') {
-        e.submitter.click();
-      }
     });
+    document.body.classList.add('hash');
+    document.getElementById('password').dispatchEvent(new Event('input'));
+    if (e.submitter && e.submitter.id === 'enter') {
+      e.submitter.click();
+    }
   }
   else {
     notify('Passwords do not match!');
   }
 });
 
-document.getElementById('options').onchange = () => {
-  check().then(save).catch(() => notify('Wrong password! Your changes are ignored'));
+document.getElementById('options').onchange = async () => {
+  try {
+    await check();
+    save();
+  }
+  catch (e) {
+    notify('Wrong password! Your changes are ignored');
+  }
 };
 
 document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('password').focus();
 });
 
-document.getElementById('settings').onclick = () => check().then(() => {
-  document.getElementById('options').classList.toggle('hidden');
-}).catch(e => notify(e.message === 'NO_PASSWORD_IS_SET' ? 'Set the password, then retry' : 'Password is incorrect'));
+document.getElementById('settings').onclick = async () => {
+  try {
+    await check();
+    document.getElementById('options').classList.toggle('hidden');
+  }
+  catch (e) {
+    notify(e.message === 'NO_PASSWORD_IS_SET' ? 'Set the password, then retry' : 'Password is incorrect');
+  }
+};
 
 // prevent context menu
 {
