@@ -7,15 +7,15 @@
   <title>Interface for Password Lock for WhatsApp™ Web</title>
 </head>
 <body>
-  <form>
+  <form autocomplete="off">
     <img src="imgs/lock.png" width="128">
-    <input type="password" id="password" placeholder="Enter Password, then press Enter to Unlock" minlength=5 tabindex="1">
+    <input type="password" id="password" placeholder="Enter Password, then press Enter to Unlock" minlength=5 tabindex="1" autocomplete="off">
     <div style="display: flex; gap: 2px;">
       <input type="submit" id="enter" value="Unlock"  tabindex="3">
       <input type="button" id="reset" value="Reset">
       <input type="button" id="settings" value="Options">
     </div>
-    <input type="password" id="password-check" placeholder="Enter New Password Again"  tabindex="2">
+    <input type="password" id="password-check" placeholder="Enter New Password Again" tabindex="2" autocomplete="off">
     <input type="submit" id="change" value="Change Password">
   </form>
   <div id="options" class="hidden">
